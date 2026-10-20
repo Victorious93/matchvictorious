@@ -18,6 +18,7 @@ data class ProfileRow(
 data class Candidate(
     val id: String, @SerialName("display_name") val displayName: String, val age: Int, val bio: String? = null,
     val city: String? = null, @SerialName("distance_km") val distanceKm: Int? = null, val photos: List<String> = emptyList(),
+    val prompts: List<CandidatePrompt> = emptyList(), @SerialName("voice_path") val voicePath: String? = null,
 )
 
 @Serializable data class CityRow(val name: String)
@@ -33,7 +34,8 @@ data class PrefsRow(
 }
 
 @Serializable
-data class SwipeRow(@SerialName("swiper_id") val swiperId: String, @SerialName("target_id") val targetId: String, val liked: Boolean)
+data class SwipeRow(@SerialName("swiper_id") val swiperId: String, @SerialName("target_id") val targetId: String, val liked: Boolean,
+    val comment: String? = null, @SerialName("prompt_id") val promptId: String? = null)
 
 @Serializable
 data class MatchRow(

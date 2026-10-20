@@ -8,6 +8,8 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <!-- Android 13+: asked with an in-app explanation; notifications are generic by default. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Voice intro recording (user-initiated, max 30 s). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <!-- Fleet control: only apps signed with the SAME key may call the fleet API. -->
     <permission

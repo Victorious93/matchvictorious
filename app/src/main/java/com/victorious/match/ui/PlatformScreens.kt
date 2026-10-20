@@ -109,6 +109,8 @@ fun MyProfileScreen(state: PlatformState) = SignedIn { _ ->
             }
             status?.let { P(it, Cyan) }
         }
+        PromptsCard()
+        VoiceIntroCard()
         LocationCard()
         PreferencesCard()
         NeonCard {
@@ -131,8 +133,8 @@ fun DiscoverScreen() = SignedIn { _ ->
         q.isEmpty() -> Empty("No one new right now", msg ?: "Save your profile and check back later. Only verified members appear here.", "Refresh") { load() }
         else -> {
             val c = q.first()
-            fun act(like: Boolean) = scope.launch {
-                runCatching { Backend.swipe(c.id, like) }.onFailure { msg = err(it) }
+            fun act(like: Boolean, comment: String? = null, promptId: String? = null) = scope.launch {
+                runCatching { Backend.swipe(c.id, like, comment, promptId) }.onFailure { msg = err(it) }
                 queue = q.drop(1); if (queue!!.isEmpty()) load()
             }
             Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -142,7 +144,9 @@ fun DiscoverScreen() = SignedIn { _ ->
                     H("${c.displayName}, ${c.age}")
                     LocationPrivacy.distanceLabel(c.distanceKm, c.city)?.let { P(it, MaterialTheme.colorScheme.secondary) }
                     c.bio?.let { P(it) }
+                    c.voicePath?.let { VoicePlayButton(it) }
                 }
+                PromptAnswers(c.prompts) { p, comment -> act(true, comment, p.promptId) }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
                     OutlinedButton(onClick = { act(false) }) { Text("Pass") }
                     Button(onClick = { act(true) }) { Text("Like") }
@@ -216,6 +220,7 @@ fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
                 }
             }
         }
+        if (msgs.isEmpty()) IcebreakerChips(other) { text = it }
         LazyColumn(Modifier.weight(1f), state = list, verticalArrangement = Arrangement.spacedBy(6.dp)) {
             items(msgs, key = { it.id ?: it.hashCode().toLong() }) { m ->
                 val mine = m.senderId == me

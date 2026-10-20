@@ -44,5 +44,7 @@ object ModApi {
     suspend fun reports(includeClosed: Boolean = false): List<ModReport> = pg.rpc("mod_reports", buildJsonObject { put("p_include_closed", includeClosed) }).decodeList()
     suspend fun resolve(report: String, action: String, note: String?) { pg.rpc("mod_resolve_report", buildJsonObject { put("p_report", report); put("p_action", action); put("p_note", note) }) }
     suspend fun setBan(user: String, banned: Boolean, reason: String?) { pg.rpc("mod_set_ban", buildJsonObject { put("p_user", user); put("p_banned", banned); put("p_reason", reason) }) }
+    suspend fun pendingVoice(): List<PendingVoice> = pg.rpc("mod_pending_voice").decodeList()
+    suspend fun reviewVoice(user: String, approve: Boolean, reason: String?) { pg.rpc("mod_review_voice", buildJsonObject { put("p_user", user); put("p_approve", approve); put("p_reason", reason) }) }
     suspend fun myStatus(): ModStatus? = runCatching { pg.rpc("my_moderation_status").decodeList<ModStatus>().firstOrNull() }.getOrNull()
 }

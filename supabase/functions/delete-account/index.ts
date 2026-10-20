@@ -24,14 +24,16 @@ Deno.serve(async (req) => {
   if (error || !user) return json(401, { error: "Invalid or expired session" });
   const uid = user.id;
 
-  // 1) Storage objects in photos/<uid>/ (DB rows cascade, files do not).
-  const bucket = admin.storage.from("photos");
-  for (;;) {
-    const { data: files, error: le } = await bucket.list(uid, { limit: 100 });
-    if (le) return json(500, { error: "Could not list photos" });
-    if (!files || files.length === 0) break;
-    const { error: re } = await bucket.remove(files.map((f) => `${uid}/${f.name}`));
-    if (re) return json(500, { error: "Could not delete photos" });
+  // 1) Storage objects in <bucket>/<uid>/ (DB rows cascade, files do not).
+  for (const name of ["photos", "voice", "selfies"]) {
+    const bucket = admin.storage.from(name);
+    for (;;) {
+      const { data: files, error: le } = await bucket.list(uid, { limit: 100 });
+      if (le) { if (/not.?found/i.test(le.message)) break; return json(500, { error: `Could not list ${name}` }); }
+      if (!files || files.length === 0) break;
+      const { error: re } = await bucket.remove(files.map((f) => `${uid}/${f.name}`));
+      if (re) return json(500, { error: `Could not delete ${name}` });
+    }
   }
   // 2) Auth user. Cascades: profile, preferences, photos rows, swipes, matches, messages, blocks, call_sessions.
   //    Reports are retained with reporter/reported set to NULL (safety/legal retention).

@@ -32,8 +32,8 @@ fun ModerationScreen() = SignedIn { _ ->
         true -> {
             var tab by remember { mutableIntStateOf(0) }
             Column {
-                TabRow(tab) { listOf("Profiles", "Photos", "Reports").forEachIndexed { i, t -> Tab(tab == i, { tab = i }, text = { Text(t) }) } }
-                when (tab) { 0 -> ProfilesQueue(); 1 -> PhotosQueue(); else -> ReportsQueue() }
+                TabRow(tab) { listOf("Profiles", "Photos", "Voice", "Reports").forEachIndexed { i, t -> Tab(tab == i, { tab = i }, text = { Text(t) }) } }
+                when (tab) { 0 -> ProfilesQueue(); 1 -> PhotosQueue(); 2 -> VoiceQueue(); else -> ReportsQueue() }
             }
         }
     }
@@ -85,6 +85,23 @@ private fun PhotosQueue() {
             }
         }
         if (reject) ReasonDialog("Reject photo", true, { reject = false }) { r -> reject = false; scope.launch { done(runCatching { ModApi.reviewPhoto(ph.photoId, false, r) }) } }
+    }
+}
+
+@Composable
+private fun VoiceQueue() {
+    val scope = rememberCoroutineScope()
+    Queue({ ModApi.pendingVoice() }, "No voice intros waiting for review.") { v, _, done ->
+        var reject by remember { mutableStateOf(false) }
+        NeonCard {
+            H(v.displayName); P("${v.durationS}s · ${v.createdAt?.take(16) ?: ""}", MaterialTheme.colorScheme.secondary)
+            VoicePlayButton(v.storagePath, "▶ Listen")
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Button(onClick = { scope.launch { done(runCatching { ModApi.reviewVoice(v.userId, true, null) }) } }) { Text("Approve") }
+                OutlinedButton(onClick = { reject = true }) { Text("Reject") }
+            }
+        }
+        if (reject) ReasonDialog("Reject voice intro", true, { reject = false }) { r -> reject = false; scope.launch { done(runCatching { ModApi.reviewVoice(v.userId, false, r) }) } }
     }
 }
 

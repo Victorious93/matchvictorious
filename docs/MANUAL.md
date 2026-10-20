@@ -27,6 +27,12 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 11. **Notifications:** after sign-in, Android 13+ asks for notification permission (after an explanation). Notifications say only "You have a new match" or "New message". Turn on **Settings → Notifications → Show previews** to include names and message text. Nothing is sent to blocked or unmatched people. Signing out or deleting the account removes this device's push token. Builds without Firebase configured show "Push notifications are not configured in this build".
 12. Verification: only verified profiles appear in Discover. During the beta a moderator verifies profiles. Selfie liveness verification is planned.
 
+## Prompts, voice intro and icebreakers
+- **Prompts:** on Profile, choose up to 3 prompts from the curated list, answer each (max 200 characters) and tap Save prompts.
+- **Voice intro:** tap Record (microphone permission). Recording stops automatically at 30 seconds. The clip is stored privately and reviewed by moderators before others can hear it. You can play it, re-record it or delete it.
+- **Like with comment:** in Discover, tap **♥ Like this answer** under someone's prompt and optionally add a comment (max 300 characters). The comment is revealed only if you match: it becomes the first message in the chat.
+- **Icebreakers:** an empty chat shows suggested openers based on the other person's prompts. Tapping one fills the message box. Nothing is sent until you tap Send.
+
 ## Moderation (moderators only)
 **Make yourself a moderator (Don, once):**
 1. Create your MatchVictorious account in the app (Profile → Create account) and save a profile.
@@ -38,6 +44,7 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 
 **Queues:**
 - **Profiles:** unverified or pending profiles with their photos. **Verify** makes the profile visible in Discover. **Reject** needs a reason, and the user sees it on their Profile screen.
+- **Voice:** pending voice intros. **Listen**, then **Approve**, or **Reject** with a reason.
 - **Photos:** pending uploads. **Approve** makes a photo visible to others. **Reject** needs a reason.
 - **Reports:** open reports with the reason, details and a snapshot of the reported name and bio taken when the report was filed (kept even if the account is deleted).
   - **Dismiss** closes the report.

@@ -58,8 +58,8 @@ object Backend {
 
     suspend fun discover(limit: Int = 20): List<Candidate> =
         client.postgrest.rpc("discover", buildJsonObject { put("p_limit", limit) }).decodeList()
-    suspend fun swipe(target: String, liked: Boolean) =
-        client.from("swipes").insert(SwipeRow(me()!!, target, liked))
+    suspend fun swipe(target: String, liked: Boolean, comment: String? = null, promptId: String? = null) =
+        client.from("swipes").insert(SwipeRow(me()!!, target, liked, comment?.trim()?.take(PromptRules.MAX_COMMENT)?.ifBlank { null }, promptId))
 
     suspend fun matches(): List<MatchRow> = client.from("matches").select { filter { exact("unmatched_at", null) }; order("created_at", Order.DESCENDING) }.decodeList()
     suspend fun names(ids: List<String>): Map<String, String> = if (ids.isEmpty()) emptyMap() else
