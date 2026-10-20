@@ -19,7 +19,7 @@ class FleetReceiver : BroadcastReceiver() {
             putString("node", "matchvictorious"); putString("role", "EXTERNAL_NODE"); putString("version", BuildConfigLite.VERSION)
             putBoolean("consent", consent); putInt("imports", bundles.size)
             putInt("matches", bundles.sumOf { it.matches.size }); putInt("messages", bundles.sumOf { it.messages.size })
-            putBoolean("live_sync", false); putBoolean("network", false)
+            putBoolean("live_sync", false); putBoolean("network", true)
         }
         if (isOrderedBroadcast) { resultCode = 1; setResultExtras(extras); resultData = "OK" }
         intent.getStringExtra(FleetApi.EXTRA_REPLY_PACKAGE)?.let { pkg ->

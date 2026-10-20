@@ -51,18 +51,20 @@ fun App(requested: MutableState<Screen?>) = MatchTheme {
     fun reload() = scope.launch { bundles = withContext(Dispatchers.IO) { store.loadAll() } }
     LaunchedEffect(Unit) { reload() }
     val filters = remember { Filters() }
-    var screen by remember { mutableStateOf(Screen.Profiles) }
+    var screen by remember { mutableStateOf(Screen.Discover) }
+    val platform = remember { PlatformState() }
     LaunchedEffect(requested.value) { requested.value?.let { screen = it; requested.value = null } }
-    BackHandler(enabled = screen != Screen.Profiles) { screen = if (screen in listOf(Screen.Filters, Screen.Guide, Screen.Help, Screen.Settings)) Screen.More else Screen.Profiles }
+    val underMore = listOf(Screen.Filters, Screen.Guide, Screen.Help, Screen.Settings, Screen.Profiles, Screen.Matches, Screen.Messages)
+    BackHandler(enabled = screen != Screen.Discover && platform.openChat == null) { screen = if (screen in underMore) Screen.More else Screen.Discover }
 
     Scaffold(
         containerColor = Bg,
-        topBar = { TopAppBar(title = { Text(if (screen == Screen.Profiles) "MatchVictorious" else screen.title, fontWeight = FontWeight.Bold) },
+        topBar = { TopAppBar(title = { Text(if (screen == Screen.Discover) "MatchVictorious" else screen.title, fontWeight = FontWeight.Bold) },
             colors = TopAppBarDefaults.topAppBarColors(containerColor = Bg, titleContentColor = Cyan)) },
         bottomBar = {
             NavigationBar(containerColor = Surface) {
-                listOf(Screen.Profiles to "◉", Screen.Matches to "♥", Screen.Messages to "✉", Screen.Import to "⇩", Screen.More to "☰").forEach { (s, g) ->
-                    val sel = screen == s || (s == Screen.More && screen in listOf(Screen.Filters, Screen.Guide, Screen.Help, Screen.Settings))
+                listOf(Screen.Discover to "◉", Screen.Chats to "♥", Screen.MyProfile to "☺", Screen.Import to "⇩", Screen.More to "☰").forEach { (s, g) ->
+                    val sel = screen == s || (s == Screen.More && screen in underMore)
                     NavigationBarItem(selected = sel, onClick = { screen = s }, icon = { Text(g, fontSize = 20.sp) }, label = { Text(s.title, fontSize = 11.sp) },
                         colors = NavigationBarItemDefaults.colors(selectedIconColor = Magenta, selectedTextColor = Cyan, indicatorColor = Color2))
                 }
@@ -71,7 +73,10 @@ fun App(requested: MutableState<Screen?>) = MatchTheme {
     ) { pad ->
         Box(Modifier.padding(pad).fillMaxSize()) {
             when (screen) {
-                Screen.Profiles -> ProfilesScreen(bundles, filters) { screen = Screen.Import }
+                Screen.Discover -> DiscoverScreen()
+                Screen.Chats -> ChatsScreen(platform)
+                Screen.MyProfile -> MyProfileScreen(platform)
+                Screen.Profiles -> ProfilesScreen(bundles, filters, onUse = { b -> b.profile?.let { platform.pendingDraft = com.victorious.match.backend.ProfileDraft.fromImport(it, b.platformId); screen = Screen.MyProfile } }) { screen = Screen.Import }
                 Screen.Matches -> MatchesScreen(bundles, filters)
                 Screen.Messages -> MessagesScreen(bundles, filters)
                 Screen.Filters -> FiltersScreen(filters)
@@ -104,7 +109,8 @@ fun ConsentScreen(onAccept: () -> Unit) = Column(
     NeonCard {
         H("Before you start")
         P("• Imports YOUR data exports that you requested from dating platforms.\n" +
-          "• Everything is parsed and stored on this device, encrypted. The app has no internet permission.\n" +
+          "• Imports are parsed and stored on this device, encrypted, and are never uploaded.\n" +
+          "• If you create a MatchVictorious account, only the profile, photos, likes and chats you create are stored on our server (Supabase). No phone number is collected.\n" +
           "• Never asks for your dating-app passwords. No automation, no accessibility service, no notification reading, no live sync.\n" +
           "• Exports contain other people's names and messages. Keep them private and do not share them.\n" +
           "• Not affiliated with or endorsed by any dating platform.\n" +
@@ -116,7 +122,7 @@ fun ConsentScreen(onAccept: () -> Unit) = Column(
 }
 
 @Composable
-fun ProfilesScreen(bundles: List<ImportBundle>, f: Filters, onImport: () -> Unit) {
+fun ProfilesScreen(bundles: List<ImportBundle>, f: Filters, onUse: (ImportBundle) -> Unit = {}, onImport: () -> Unit) {
     val list = bundles.filter { f.platformOk(it.platformId) }
     if (list.isEmpty()) return Empty("No imports yet", "Import a data export to see your profiles.", "Import", onImport)
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
@@ -135,6 +141,7 @@ fun ProfilesScreen(bundles: List<ImportBundle>, f: Filters, onImport: () -> Unit
                 P("${b.matches.size} conversations · ${b.messages.size} messages")
                 if (b.usage.isNotEmpty()) P(b.usage.entries.take(8).joinToString("  ") { "${it.key}: ${it.value}" }, MaterialTheme.colorScheme.primary)
                 b.notes.forEach { P("ℹ $it", androidx.compose.ui.graphics.Color.Gray) }
+                if (p != null) TextButton(onClick = { onUse(b) }) { Text("Use for my MatchVictorious profile") }
             }
         }
     }
@@ -251,7 +258,7 @@ fun GuideScreen() {
                       TextButton(onClick = { DeepLinks.openOfficialApp(ctx, p) }) { Text("Open app") } }
             }
         }
-        item { P("Links open in your browser; MatchVictorious itself has no network access.", androidx.compose.ui.graphics.Color.Gray) }
+        item { P("Links open in your browser. Imported exports never leave this device.", androidx.compose.ui.graphics.Color.Gray) }
     }
 }
 
@@ -276,7 +283,7 @@ fun HelpScreen() {
 fun SettingsScreen(store: EncryptedStore, onDeleteAll: () -> Unit) {
     var confirm by remember { mutableStateOf(false) }
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        NeonCard { H("Privacy"); P("Network access: none (no INTERNET permission)\nStorage: AES-256-GCM EncryptedFile, key in Android Keystore\nBackups: disabled\nLive sync: not available (no platform API)") }
+        NeonCard { H("Privacy"); P("Network: only for your MatchVictorious account (Supabase). Imports never leave the device.\nStorage: AES-256-GCM EncryptedFile, key in Android Keystore\nBackups: disabled\nLive sync: not available (no platform API)") }
         NeonCard { H("Fleet API"); P("droidcommand-AI may query STATUS (aggregate counts only) and open screens. Requires the signature permission com.victorious.match.permission.FLEET_CONTROL. See Help.") }
         NeonCard {
             H("Delete All Data"); P("Removes every import, the consent record and caches from this device. Cannot be undone.")
@@ -291,7 +298,8 @@ fun SettingsScreen(store: EncryptedStore, onDeleteAll: () -> Unit) {
 
 @Composable
 fun MoreScreen(go: (Screen) -> Unit) = Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-    listOf(Screen.Filters to "Platform, search and message filters", Screen.Guide to "How to request your export from each platform",
+    listOf(Screen.Profiles to "Profiles from your imported exports (on-device)", Screen.Matches to "Imported matches (on-device)",
+        Screen.Messages to "Imported messages (on-device)", Screen.Filters to "Platform, search and message filters", Screen.Guide to "How to request your export from each platform",
         Screen.Help to "User manual", Screen.Settings to "Privacy, fleet API, Delete All Data").forEach { (s, d) ->
         NeonCard(Modifier.clickable { go(s) }) { H(s.title); P(d) }
     }
