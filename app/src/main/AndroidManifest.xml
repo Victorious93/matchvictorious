@@ -59,6 +59,7 @@
                 <action android:name="com.victorious.match.action.PING" />
             </intent-filter>
         </receiver>
+        <receiver android:name=".safety.CheckinReceiver" android:exported="false" />
         <service android:name=".push.MvMessagingService" android:exported="false">
             <intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT" /></intent-filter>
         </service>
