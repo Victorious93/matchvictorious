@@ -18,6 +18,9 @@ import io.github.jan.supabase.realtime.realtime
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.storage.Storage
 import io.github.jan.supabase.storage.storage
+import io.github.jan.supabase.functions.Functions
+import io.github.jan.supabase.functions.functions
+import kotlin.time.Duration.Companion.minutes
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -29,7 +32,7 @@ import java.util.UUID
 object Backend {
     val client by lazy {
         createSupabaseClient(BuildConfig.SUPABASE_URL, BuildConfig.SUPABASE_KEY) {
-            install(Auth); install(Postgrest); install(Realtime); install(Storage)
+            install(Auth); install(Postgrest); install(Realtime); install(Storage); install(Functions)
         }
     }
     val auth get() = client.auth
@@ -81,6 +84,28 @@ object Backend {
 
     suspend fun block(other: String) = client.from("blocks").insert(BlockRow(me()!!, other))
     suspend fun report(other: String, reason: String, details: String?) = client.from("reports").insert(ReportRow(me()!!, other, reason, details))
+
+    suspend fun setLocation(lat: Double, lon: Double) {
+        require(LocationPrivacy.valid(lat, lon))
+        client.postgrest.rpc("set_my_location", buildJsonObject { put("lat", LocationPrivacy.round(lat)); put("lon", LocationPrivacy.round(lon)) })
+    }
+    suspend fun setCity(name: String) { client.postgrest.rpc("set_my_city", buildJsonObject { put("city_name", name) }) }
+    suspend fun cities(): List<String> = client.from("cities").select(io.github.jan.supabase.postgrest.query.Columns.list("name")) { order("name", Order.ASCENDING) }.decodeList<CityRow>().map { it.name }
+
+    suspend fun prefs(): PrefsRow = me()!!.let { id -> client.from("preferences").select { filter { eq("user_id", id) } }.decodeSingleOrNull<PrefsRow>() ?: PrefsRow(id) }
+    suspend fun savePrefs(p: PrefsRow) { client.from("preferences").upsert(p.clamped()) }
+
+    /** Short-lived signed URLs for approved photos (private bucket; storage RLS decides). */
+    suspend fun signedUrls(paths: List<String>): List<String> = paths.mapNotNull { p ->
+        runCatching { client.storage.from("photos").createSignedUrl(p, 10.minutes) }.getOrNull()
+    }
+
+    /** Server-side deletion via the delete-account Edge Function (service role lives only there). */
+    suspend fun deleteAccount() {
+        client.functions.invoke("delete-account")
+        runCatching { auth.signOut() }
+        auth.clearSession()
+    }
 
     private val PROFILE_COLS = arrayOf("id", "display_name", "birthdate", "gender", "bio", "imported_from", "verification_status")
 }

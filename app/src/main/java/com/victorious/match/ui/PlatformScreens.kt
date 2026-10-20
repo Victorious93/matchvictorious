@@ -108,6 +108,8 @@ fun MyProfileScreen(state: PlatformState) = SignedIn { _ ->
             }
             status?.let { P(it, Cyan) }
         }
+        LocationCard()
+        PreferencesCard()
         NeonCard {
             H("Account")
             TextButton(onClick = { scope.launch { runCatching { Backend.signOut() } } }) { Text("Sign out") }
@@ -132,10 +134,12 @@ fun DiscoverScreen() = SignedIn { _ ->
                 runCatching { Backend.swipe(c.id, like) }.onFailure { msg = err(it) }
                 queue = q.drop(1); if (queue!!.isEmpty()) load()
             }
-            Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 NeonCard {
+                    PhotoCarousel(c.photos, c.displayName)
+                    Spacer(Modifier.height(8.dp))
                     H("${c.displayName}, ${c.age}")
-                    c.distanceKm?.let { P("${it.toInt()} km away", MaterialTheme.colorScheme.secondary) }
+                    LocationPrivacy.distanceLabel(c.distanceKm, c.city)?.let { P(it, MaterialTheme.colorScheme.secondary) }
                     c.bio?.let { P(it) }
                 }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {

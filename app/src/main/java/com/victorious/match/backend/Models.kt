@@ -15,7 +15,22 @@ data class ProfileRow(
 )
 
 @Serializable
-data class Candidate(val id: String, @SerialName("display_name") val displayName: String, val age: Int, val bio: String? = null, @SerialName("distance_km") val distanceKm: Double? = null)
+data class Candidate(
+    val id: String, @SerialName("display_name") val displayName: String, val age: Int, val bio: String? = null,
+    val city: String? = null, @SerialName("distance_km") val distanceKm: Int? = null, val photos: List<String> = emptyList(),
+)
+
+@Serializable data class CityRow(val name: String)
+
+@Serializable
+data class PrefsRow(
+    @SerialName("user_id") val userId: String,
+    @SerialName("min_age") val minAge: Int = 18,
+    @SerialName("max_age") val maxAge: Int = 99,
+    @SerialName("max_distance_km") val maxDistanceKm: Int = 50,
+) {
+    fun clamped() = copy(minAge = minAge.coerceIn(18, 99), maxAge = maxAge.coerceIn(minAge.coerceIn(18, 99), 99), maxDistanceKm = maxDistanceKm.coerceIn(1, 500))
+}
 
 @Serializable
 data class SwipeRow(@SerialName("swiper_id") val swiperId: String, @SerialName("target_id") val targetId: String, val liked: Boolean)

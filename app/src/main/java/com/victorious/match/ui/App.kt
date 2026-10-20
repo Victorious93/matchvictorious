@@ -285,6 +285,7 @@ fun SettingsScreen(store: EncryptedStore, onDeleteAll: () -> Unit) {
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
         NeonCard { H("Privacy"); P("Network: only for your MatchVictorious account (Supabase). Imports never leave the device.\nStorage: AES-256-GCM EncryptedFile, key in Android Keystore\nBackups: disabled\nLive sync: not available (no platform API)") }
         NeonCard { H("Fleet API"); P("droidcommand-AI may query STATUS (aggregate counts only) and open screens. Requires the signature permission com.victorious.match.permission.FLEET_CONTROL. See Help.") }
+        DeleteAccountCard {}
         NeonCard {
             H("Delete All Data"); P("Removes every import, the consent record and caches from this device. Cannot be undone.")
             Button(onClick = { confirm = true }, colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.error)) { Text("Delete All Data") }
