@@ -1,0 +1,11 @@
+.gradle/
+build/
+local.properties
+.idea/
+*.iml
+.DS_Store
+# Release keystores must never be committed (only app/debug.keystore is allowed)
+*.jks
+release*.keystore
+*-release.keystore
+keystore.properties
