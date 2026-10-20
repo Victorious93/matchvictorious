@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** Shared state: a draft pre-filled from an import waiting to be reviewed on the profile screen. */
-class PlatformState { var pendingDraft by mutableStateOf<ProfileDraft?>(null); var openChat by mutableStateOf<MatchRow?>(null) }
+class PlatformState { var pendingDraft by mutableStateOf<ProfileDraft?>(null); var openChat by mutableStateOf<MatchCard?>(null) }
 
 private fun err(t: Throwable) = t.message?.lineSequence()?.firstOrNull()?.take(200) ?: "Something went wrong"
 
@@ -155,32 +155,44 @@ fun DiscoverScreen() = SignedIn { _ ->
 @Composable
 fun ChatsScreen(state: PlatformState) = SignedIn { me ->
     state.openChat?.let { m -> return@SignedIn ChatScreen(me, m) { state.openChat = null } }
-    var rows by remember { mutableStateOf<List<MatchRow>?>(null) }
-    var names by remember { mutableStateOf<Map<String, String>>(emptyMap()) }
+    var cards by remember { mutableStateOf<List<MatchCard>?>(null) }
     var msg by remember { mutableStateOf<String?>(null) }
-    LaunchedEffect(Unit) {
-        runCatching { Backend.matches() }.onSuccess { r -> rows = r; names = runCatching { Backend.names(r.map { it.other(me) }) }.getOrDefault(emptyMap()) }
-            .onFailure { msg = err(it); rows = emptyList() }
-    }
-    val r = rows ?: return@SignedIn Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
-    if (r.isEmpty()) return@SignedIn Empty("No matches yet", msg ?: "When you and someone both tap Like, you match here.")
+    LaunchedEffect(Unit) { runCatching { Backend.matchCards() }.onSuccess { cards = it }.onFailure { msg = err(it); cards = emptyList() } }
+    val c = cards ?: return@SignedIn Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { CircularProgressIndicator() }
+    if (c.isEmpty()) return@SignedIn Empty("No matches yet", msg ?: "When you and someone both tap Like, you match here.")
+    val (fresh, chats) = MatchCard.split(c)
     LazyColumn(contentPadding = PaddingValues(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        items(r, key = { it.id }) { m ->
+        if (fresh.isNotEmpty()) {
+            item { H("New matches") }
+            item { androidx.compose.foundation.lazy.LazyRow(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
+                items(fresh, key = { it.matchId }) { m ->
+                    Column(Modifier.clickable { state.openChat = m }, horizontalAlignment = Alignment.CenterHorizontally) {
+                        Avatar(m.photoPath, m.initial, 64.dp); P(m.otherName.take(12))
+                    }
+                }
+            } }
+        }
+        if (chats.isNotEmpty()) item { H("Chats") }
+        items(chats, key = { it.matchId }) { m ->
             NeonCard(Modifier.clickable { state.openChat = m }) {
-                H(names[m.other(me)] ?: "Match"); P("Expires ${m.expiresAt?.take(10) ?: "-"}", MaterialTheme.colorScheme.secondary)
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Avatar(m.photoPath, m.initial); Spacer(Modifier.width(12.dp))
+                    Column { H(m.otherName); P("Last message ${m.lastMessageAt?.take(10) ?: "-"} · expires ${m.expiresAt?.take(10) ?: "-"}", MaterialTheme.colorScheme.secondary) }
+                }
             }
         }
     }
 }
 
 @Composable
-fun ChatScreen(me: String, match: MatchRow, onBack: () -> Unit) {
+fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
+    val match = MatchRow(card.matchId, me, card.otherId)
     val scope = rememberCoroutineScope()
     var msgs by remember { mutableStateOf<List<MessageRow>>(emptyList()) }
     var text by remember { mutableStateOf("") }
     var info by remember { mutableStateOf<String?>(null) }
     var menu by remember { mutableStateOf(false) }
-    val other = match.other(me)
+    val other = card.otherId
     androidx.activity.compose.BackHandler(onBack = onBack)
     LaunchedEffect(match.id) {
         runCatching { msgs = Backend.messages(match.id) }.onFailure { info = err(it) }
@@ -192,6 +204,7 @@ fun ChatScreen(me: String, match: MatchRow, onBack: () -> Unit) {
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton(onClick = onBack) { Text("‹ Back") }
+            Avatar(card.photoPath, card.initial, 40.dp); Spacer(Modifier.width(8.dp)); H(card.otherName)
             Spacer(Modifier.weight(1f))
             Box { TextButton(onClick = { menu = true }) { Text("Safety") }
                 DropdownMenu(menu, { menu = false }) {

@@ -9,3 +9,8 @@ local.properties
 release*.keystore
 *-release.keystore
 keystore.properties
+
+# Firebase config is provided per-developer / via CI secret, never committed
+app/google-services.json
+google-services.json
+*service-account*.json

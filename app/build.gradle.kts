@@ -13,6 +13,9 @@ val hasReleaseSigning = rs.all { !it.isNullOrBlank() }
 fun cfg(name: String, default: String) = (findProperty(name) as String?) ?: System.getenv(name) ?: default
 val supabaseUrl = cfg("MV_SUPABASE_URL", "https://swcotjvqumzgszzhnmks.supabase.co")
 val supabaseKey = cfg("MV_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_iKqJke5ky7TSBqKmmeWMKw_e4kQdEF9")
+// FCM is enabled only when app/google-services.json exists (never committed; CI may write it from a secret).
+val pushConfigured = file("google-services.json").exists()
+if (pushConfigured) apply(plugin = "com.google.gms.google-services")
 require(!supabaseKey.startsWith("sb_secret_") && !supabaseKey.contains("service_role")) { "Refusing to embed a secret Supabase key" }
 
 android {
@@ -22,10 +25,11 @@ android {
         applicationId = "com.victorious.match"
         minSdk = 26
         targetSdk = 36
-        versionCode = 3
-        versionName = "0.3.0"
+        versionCode = 4
+        versionName = "0.4.0"
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
+        buildConfigField("boolean", "PUSH_CONFIGURED", pushConfigured.toString())
     }
     signingConfigs {
         getByName("debug") {
@@ -74,6 +78,8 @@ dependencies {
     implementation(libs.supabase.functions)
     implementation(libs.coil.compose)
     implementation(libs.coil.network)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
     implementation(libs.ktor.client.okhttp)
     testImplementation(libs.junit)
     testImplementation(libs.org.json)

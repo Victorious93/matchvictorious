@@ -6,6 +6,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <!-- Approximate location only (rounded again to ~1 km before upload). Optional; city fallback exists. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Android 13+: asked with an in-app explanation; notifications are generic by default. -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
 
     <!-- Fleet control: only apps signed with the SAME key may call the fleet API. -->
     <permission
@@ -55,5 +57,9 @@
                 <action android:name="com.victorious.match.action.PING" />
             </intent-filter>
         </receiver>
+        <service android:name=".push.MvMessagingService" android:exported="false">
+            <intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT" /></intent-filter>
+        </service>
+        <meta-data android:name="com.google.firebase.messaging.default_notification_channel_id" android:value="matches_messages" />
     </application>
 </manifest>

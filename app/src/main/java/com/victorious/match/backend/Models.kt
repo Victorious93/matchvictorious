@@ -69,3 +69,22 @@ object Chat {
     fun merge(existing: List<MessageRow>, incoming: MessageRow): List<MessageRow> =
         if (incoming.id != null && existing.any { it.id == incoming.id }) existing else (existing + incoming).sortedBy { it.id ?: Long.MAX_VALUE }
 }
+
+@Serializable
+data class MatchCard(
+    @SerialName("match_id") val matchId: String,
+    @SerialName("other_id") val otherId: String,
+    @SerialName("other_name") val otherName: String,
+    @SerialName("photo_path") val photoPath: String? = null,
+    @SerialName("created_at") val createdAt: String? = null,
+    @SerialName("expires_at") val expiresAt: String? = null,
+    @SerialName("last_message_at") val lastMessageAt: String? = null,
+) {
+    val initial get() = otherName.trim().firstOrNull()?.uppercase() ?: "?"
+    companion object {
+        /** New matches (no messages yet) vs ongoing chats. */
+        fun split(cards: List<MatchCard>) = cards.partition { it.lastMessageAt == null }
+    }
+}
+
+@Serializable data class NotificationPrefs(@SerialName("user_id") val userId: String, @SerialName("show_previews") val showPreviews: Boolean = false)

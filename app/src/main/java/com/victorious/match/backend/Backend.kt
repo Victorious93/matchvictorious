@@ -40,7 +40,7 @@ object Backend {
 
     suspend fun signUp(email: String, password: String) = auth.signUpWith(Email) { this.email = email; this.password = password }
     suspend fun signIn(email: String, password: String) = auth.signInWith(Email) { this.email = email; this.password = password }
-    suspend fun signOut() = auth.signOut()
+    suspend fun signOut() { runCatching { com.victorious.match.push.Push.unregister() }; auth.signOut() }
 
     suspend fun myProfile(): ProfileRow? = me()?.let { id ->
         client.from("profiles").select(io.github.jan.supabase.postgrest.query.Columns.list(*PROFILE_COLS)) { filter { eq("id", id) } }.decodeSingleOrNull<ProfileRow>()
@@ -102,10 +102,18 @@ object Backend {
 
     /** Server-side deletion via the delete-account Edge Function (service role lives only there). */
     suspend fun deleteAccount() {
+        runCatching { com.victorious.match.push.Push.unregister() }
         client.functions.invoke("delete-account")
         runCatching { auth.signOut() }
         auth.clearSession()
     }
+
+    suspend fun matchCards(): List<MatchCard> = client.postgrest.rpc("match_cards").decodeList()
+    suspend fun registerToken(t: String) { client.postgrest.rpc("register_device_token", buildJsonObject { put("p_token", t) }) }
+    suspend fun deleteToken(t: String) { client.from("device_tokens").delete { filter { eq("token", t) } } }
+    suspend fun showPreviews(): Boolean = me()?.let { id ->
+        client.from("notification_prefs").select { filter { eq("user_id", id) } }.decodeSingleOrNull<NotificationPrefs>()?.showPreviews } ?: false
+    suspend fun setShowPreviews(v: Boolean) { client.from("notification_prefs").upsert(NotificationPrefs(me()!!, v)) }
 
     private val PROFILE_COLS = arrayOf("id", "display_name", "birthdate", "gender", "bio", "imported_from", "verification_status")
 }

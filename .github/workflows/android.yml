@@ -19,6 +19,11 @@ jobs:
           distribution: temurin
           java-version: '17'
       - uses: gradle/actions/setup-gradle@v4
+      - name: Firebase config (optional)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then printf '%s' "$GOOGLE_SERVICES_JSON" > app/google-services.json; echo "FCM enabled"; else echo "No GOOGLE_SERVICES_JSON secret; building with push disabled"; fi
       - name: Unit tests
         run: ./gradlew testDebugUnitTest --stacktrace
       - name: Assemble debug
