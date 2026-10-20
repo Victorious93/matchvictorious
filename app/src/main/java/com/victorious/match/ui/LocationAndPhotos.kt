@@ -89,7 +89,7 @@ fun LocationCard() {
 }
 
 @Composable
-fun PreferencesCard() {
+fun PreferencesCard(plus: Boolean = false) {
     val scope = rememberCoroutineScope()
     var p by remember { mutableStateOf<PrefsRow?>(null) }
     var status by remember { mutableStateOf<String?>(null) }
@@ -101,6 +101,11 @@ fun PreferencesCard() {
         RangeSlider(value = cur.minAge.toFloat()..cur.maxAge.toFloat(), onValueChange = { r -> p = cur.copy(minAge = r.start.toInt(), maxAge = r.endInclusive.toInt()) }, valueRange = 18f..99f)
         P("Maximum distance ${cur.maxDistanceKm} km")
         Slider(value = cur.maxDistanceKm.toFloat(), onValueChange = { p = cur.copy(maxDistanceKm = it.toInt()) }, valueRange = 1f..500f)
+        if (plus) {
+            P("Victorious+ filters", MaterialTheme.colorScheme.secondary)
+            Row(verticalAlignment = Alignment.CenterVertically) { Switch(cur.onlyWithVoice, { p = cur.copy(onlyWithVoice = it) }); Spacer(Modifier.width(8.dp)); P("Only people with a voice intro") }
+            Row(verticalAlignment = Alignment.CenterVertically) { Switch(cur.onlyWithPrompts, { p = cur.copy(onlyWithPrompts = it) }); Spacer(Modifier.width(8.dp)); P("Only people with prompts") }
+        }
         Button(onClick = { scope.launch { status = runCatching { Backend.savePrefs(cur); "Preferences saved." }.getOrElse { it.message } } }) { Text("Save preferences") }
         status?.let { P(it, Cyan) }
     }

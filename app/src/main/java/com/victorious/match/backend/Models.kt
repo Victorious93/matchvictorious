@@ -29,6 +29,8 @@ data class PrefsRow(
     @SerialName("min_age") val minAge: Int = 18,
     @SerialName("max_age") val maxAge: Int = 99,
     @SerialName("max_distance_km") val maxDistanceKm: Int = 50,
+    @SerialName("only_with_voice") val onlyWithVoice: Boolean = false,
+    @SerialName("only_with_prompts") val onlyWithPrompts: Boolean = false,
 ) {
     fun clamped() = copy(minAge = minAge.coerceIn(18, 99), maxAge = maxAge.coerceIn(minAge.coerceIn(18, 99), 99), maxDistanceKm = maxDistanceKm.coerceIn(1, 500))
 }

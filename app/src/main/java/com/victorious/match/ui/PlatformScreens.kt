@@ -148,6 +148,7 @@ fun DiscoverScreen() = SignedIn { _ ->
                 }
                 PromptAnswers(c.prompts) { p, comment -> act(true, comment, p.promptId) }
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
+                    TextButton(onClick = { scope.launch { runCatching { PlusApi.rewind() }.onSuccess { msg = null; load() }.onFailure { msg = PlusLogic.friendlyError(it.message) } } }) { Text("↶ Rewind") }
                     OutlinedButton(onClick = { act(false) }) { Text("Pass") }
                     Button(onClick = { act(true) }) { Text("Like") }
                 }
