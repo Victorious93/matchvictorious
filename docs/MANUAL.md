@@ -16,6 +16,7 @@ Open More → Request your data. Each platform card explains the official steps 
 - Tinder: account.gotinder.com/download. The emailed link expires after 24 hours.
 - Hinge and Grindr: in-app Settings → Download My Data.
 - Bumble and Badoo: contact support and request your data.
+- Match: help.match.com → Requesting Your Data (Contact Us → I have a Safety or Privacy concern → I want to access my personal data).
 - Others: privacy request through the platform's help center.
 Exports take anywhere from minutes to 30 days.
 
