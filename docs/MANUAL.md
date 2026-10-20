@@ -27,6 +27,26 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 11. **Notifications:** after sign-in, Android 13+ asks for notification permission (after an explanation). Notifications say only "You have a new match" or "New message". Turn on **Settings → Notifications → Show previews** to include names and message text. Nothing is sent to blocked or unmatched people. Signing out or deleting the account removes this device's push token. Builds without Firebase configured show "Push notifications are not configured in this build".
 12. Verification: only verified profiles appear in Discover. During the beta a moderator verifies profiles. Selfie liveness verification is planned.
 
+## Moderation (moderators only)
+**Make yourself a moderator (Don, once):**
+1. Create your MatchVictorious account in the app (Profile → Create account) and save a profile.
+2. In the Supabase dashboard → SQL Editor for project `matchvictorious`, run:
+
+    insert into private.admins(user_id) select id from auth.users where email='<your email>';
+
+3. Restart the app. **More → Moderation** now appears. It is hidden for everyone else, and every moderation action is re-checked on the server, so a modified app gains nothing. To remove a moderator, run `delete from private.admins where user_id = '<uuid>';`.
+
+**Queues:**
+- **Profiles:** unverified or pending profiles with their photos. **Verify** makes the profile visible in Discover. **Reject** needs a reason, and the user sees it on their Profile screen.
+- **Photos:** pending uploads. **Approve** makes a photo visible to others. **Reject** needs a reason.
+- **Reports:** open reports with the reason, details and a snapshot of the reported name and bio taken when the report was filed (kept even if the account is deleted).
+  - **Dismiss** closes the report.
+  - **Warn** adds a warning and shows the user your note.
+  - **Ban** suspends the account. Banned users disappear from Discover and from other people's chats.
+  - **Unban** reinstates the account.
+
+Every action is written to the audit log (`private.audit_log`). Users see verification results, warnings and suspensions in a "Message from moderators" card on their Profile screen.
+
 ## Getting your export
 Open More → Request your data. Each platform card explains the official steps and links to the official help page or portal.
 - Tinder: account.gotinder.com/download. The emailed link expires after 24 hours.
