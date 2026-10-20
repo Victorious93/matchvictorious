@@ -93,6 +93,7 @@ fun MyProfileScreen(state: PlatformState) = SignedIn { _ ->
         }
     }
     Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
+        ModerationStatusCard()
         NeonCard {
             H("My profile")
             P("Verification: ${verification ?: "unverified"}. Only verified profiles appear in discovery.", MaterialTheme.colorScheme.secondary)
