@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/logo.png" alt="matchvictorious logo" width="200">
+</p>
+
 <p align="center"><img src="assets/logo.jpg" alt="MatchVictorious" width="320"></p>
 
 # MatchVictorious
