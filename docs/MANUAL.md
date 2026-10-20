@@ -152,3 +152,10 @@ Note: adb shell holds no app signature, so the adb commands above work only on d
 - "data.json not found in ZIP": pick the original Tinder ZIP, or extract data.json and import that.
 - Generic import found nothing: the platform's format is undocumented. The notes show what was read.
 - Files larger than 200 MB are rejected. Remove the photo folders from the ZIP first.
+
+## Get verified (selfie liveness)
+More → **Get verified**. Read and accept the biometric consent, allow the camera, then follow three random prompts (turn left/right, smile, blink) with only your face in frame. When the prompts are done, look straight at the camera and a selfie is taken automatically. You have 60 seconds per attempt and 5 attempts per day. A moderator compares the selfie with your photos; you see the result on your Profile card. The selfie is deleted as soon as they decide (at most 30 days if never reviewed).
+
+**Moderators:** Moderation → **Selfies** shows the live selfie next to the profile photos and the gesture results. "Same person — verify" or "Reject" (reason required) deletes the selfie right away. Use "Purge expired selfies" occasionally to sweep any leftover objects.
+
+**Vendor option:** if AWS Rekognition Face Liveness secrets are set (docs/setup/liveness-vendor.md) the server-side vendor check is enabled; until then the on-device check is used.

@@ -32,8 +32,8 @@ fun ModerationScreen() = SignedIn { _ ->
         true -> {
             var tab by remember { mutableIntStateOf(0) }
             Column {
-                ScrollableTabRow(tab) { listOf("Profiles", "Photos", "Voice", "Reports", "Events").forEachIndexed { i, t -> Tab(tab == i, { tab = i }, text = { Text(t) }) } }
-                when (tab) { 0 -> ProfilesQueue(); 1 -> PhotosQueue(); 2 -> VoiceQueue(); 3 -> ReportsQueue(); else -> CreateEventCard() }
+                ScrollableTabRow(tab) { listOf("Profiles", "Selfies", "Photos", "Voice", "Reports", "Events").forEachIndexed { i, t -> Tab(tab == i, { tab = i }, text = { Text(t) }) } }
+                when (tab) { 0 -> ProfilesQueue(); 1 -> SelfieQueue(); 2 -> PhotosQueue(); 3 -> VoiceQueue(); 4 -> ReportsQueue(); else -> CreateEventCard() }
             }
         }
     }
@@ -145,5 +145,35 @@ fun ModerationStatusCard() {
         H(if (st.isBanned) "Account suspended" else "Message from moderators")
         st.note?.let { P(it, if (st.isBanned || st.verificationStatus == "rejected") MaterialTheme.colorScheme.error else Cyan) }
         if (st.warnings > 0) P("Warnings: ${st.warnings}", androidx.compose.ui.graphics.Color.Gray)
+    }
+}
+
+/** Liveness fallback queue: compare the live selfie with profile photos. The selfie is deleted right after the decision. */
+@Composable
+private fun SelfieQueue() {
+    val scope = rememberCoroutineScope()
+    var purged by remember { mutableStateOf<String?>(null) }
+    Column {
+        Row(Modifier.padding(horizontal = 16.dp), verticalAlignment = androidx.compose.ui.Alignment.CenterVertically) {
+            TextButton(onClick = { scope.launch { purged = runCatching { "Purged ${LivenessApi.purgeExpired()} selfie(s)." }.getOrElse { it.message } } }) { Text("Purge expired selfies") }
+            purged?.let { P(it) }
+        }
+        Queue({ LivenessApi.pending() }, "No selfies waiting for review.") { c, _, done ->
+            var reject by remember { mutableStateOf(false) }
+            var selfieUrl by remember(c.checkId) { mutableStateOf<String?>(null) }
+            LaunchedEffect(c.checkId) { selfieUrl = c.selfiePath?.let { LivenessApi.signedSelfieUrl(it) } }
+            NeonCard {
+                H(c.displayName); P("Challenge: " + c.challenge.joinToString { LivenessLogic.label(it) })
+                P("On-device results: " + LivenessLogic.summarize(c.result))
+                P("Live selfie", Cyan)
+                selfieUrl?.let { coil3.compose.AsyncImage(it, "Live selfie", Modifier.fillMaxWidth().heightIn(max = 320.dp)) } ?: P("(selfie unavailable)")
+                P("Profile photos", Cyan); PhotoCarousel(c.photos, c.displayName)
+                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Button(onClick = { scope.launch { done(runCatching { LivenessApi.review(c.checkId, true, null) }) } }) { Text("Same person — verify") }
+                    OutlinedButton(onClick = { reject = true }) { Text("Reject") }
+                }
+            }
+            if (reject) ReasonDialog("Reject selfie verification", true, { reject = false }) { r -> reject = false; scope.launch { done(runCatching { LivenessApi.review(c.checkId, false, r) }) } }
+        }
     }
 }

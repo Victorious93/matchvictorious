@@ -23,6 +23,14 @@ The app now uses the **INTERNET** permission to run your MatchVictorious account
 - **Retention and deletion:** data is kept while your account exists. Delete your account in the app (More → Settings → Delete account) or on the web at https://victorious93.github.io/matchvictorious/delete-account.html. Deletion immediately removes your account, profile, location, preferences, photos (records and files), likes, matches, messages, blocks and call records. Safety reports are kept for trust & safety and legal reasons, with the account link removed. Reports about you keep a snapshot of the reported name and bio. Provider backups expire on their schedule.
 - **Your rights (GDPR/CCPA):** access, correction, deletion, portability and objection. Sensitive data such as gender or orientation is optional and used only to show you to the people you choose.
 
+## Selfie verification & biometric data
+Selfie verification is optional and starts only after you accept a separate biometric consent screen (consent version and time are recorded with each check; this is the written release required by the Illinois Biometric Information Privacy Act (BIPA), Texas CUBI, Washington RCW 19.375 and similar laws).
+- **What we collect.** On-device check: Google ML Kit runs on your phone and measures head angle, smile and eye-open probabilities for a random gesture challenge (turn head / smile / blink). Only pass/fail per gesture is sent, plus one selfie. Optional vendor check (Amazon Rekognition Face Liveness, only if enabled): video frames stream to AWS for a liveness score; AWS audit images are disabled and the reference image is discarded. We keep only pass/fail and a confidence number.
+- **No face templates.** We never create, store or compare face templates, embeddings or face geometry on our servers. A human moderator compares your selfie with your profile photos.
+- **Purpose.** Only to confirm you are a real person who matches your photos. Never for advertising, never sold, leased, traded or otherwise profited from, never disclosed except to the processor named above or when legally required.
+- **Retention & destruction.** The selfie is stored in a private bucket readable only by you and moderators, and is deleted immediately after the moderator's decision. Undecided selfies are expired after 30 days (daily job) and swept from storage; deleting your account deletes them too. Check records (status, gesture booleans or confidence, consent version) are deleted with your account. This retention schedule is our public biometric data policy.
+- **Withdraw.** Delete your account (Profile → Delete account) or email the privacy contact; any pending selfie is destroyed.
+
 ## Fleet API
 An app holding the signature permission can request aggregate counts (number of imports, matches, messages), never content.
 
