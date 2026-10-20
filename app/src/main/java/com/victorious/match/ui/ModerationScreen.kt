@@ -32,8 +32,8 @@ fun ModerationScreen() = SignedIn { _ ->
         true -> {
             var tab by remember { mutableIntStateOf(0) }
             Column {
-                TabRow(tab) { listOf("Profiles", "Photos", "Voice", "Reports").forEachIndexed { i, t -> Tab(tab == i, { tab = i }, text = { Text(t) }) } }
-                when (tab) { 0 -> ProfilesQueue(); 1 -> PhotosQueue(); 2 -> VoiceQueue(); else -> ReportsQueue() }
+                ScrollableTabRow(tab) { listOf("Profiles", "Photos", "Voice", "Reports", "Events").forEachIndexed { i, t -> Tab(tab == i, { tab = i }, text = { Text(t) }) } }
+                when (tab) { 0 -> ProfilesQueue(); 1 -> PhotosQueue(); 2 -> VoiceQueue(); 3 -> ReportsQueue(); else -> CreateEventCard() }
             }
         }
     }

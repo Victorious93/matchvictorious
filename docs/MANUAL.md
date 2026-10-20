@@ -40,6 +40,12 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 - **Report** during a call reports and blocks the person and ends the call. Calls are never recorded. Each person can start up to 20 calls per day.
 - If calls aren't set up on the server yet, you'll see "Calls aren't available yet".
 
+## Events and group dates
+- More → **Events & group dates** lists upcoming events. Filter by city with the city button.
+- Tap an event, then **RSVP** (verified members only; capacity limits apply). After you RSVP you can see who else is going and join the event's **group chat**. People you've blocked (or who blocked you) are hidden from each other.
+- **Cancel RSVP** removes you from the list and the chat.
+- Moderators create events in Moderation → **Events** (title, description, city, venue, start/end, capacity). Creating events is audited.
+
 ## Safety center
 Open it from More → Safety center (or Safety → Share my date inside a chat).
 - **SOS:** opens your phone dialer with 911 filled in. You press call. **Share my location** opens the Android share sheet with your approximate location (a map link) for you to send to someone you trust. Nothing is ever sent automatically.
