@@ -23,7 +23,9 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 7. **Discovery preferences:** set an age range and maximum distance on Profile and tap Save preferences. Discover respects both.
 8. **Photos in Discover:** approved photos appear as a swipeable carousel through short-lived private links. A profile without photos shows its initial instead.
 9. **Delete account:** More → Settings → **Delete account**, type DELETE and confirm. This removes your account, profile, photos (including the files), likes, matches, messages and location from the server. Safety reports are kept without your account link. Web alternative: https://victorious93.github.io/matchvictorious/delete-account.html
-10. Verification: only verified profiles appear in Discover. During the beta a moderator verifies profiles. Selfie liveness verification is planned.
+10. **Avatars:** Chats shows *New matches* (no messages yet) as a row of avatars and *Chats* as a list. The chat header shows the other person's first approved photo through a short-lived private link, or their initial.
+11. **Notifications:** after sign-in, Android 13+ asks for notification permission (after an explanation). Notifications say only "You have a new match" or "New message". Turn on **Settings → Notifications → Show previews** to include names and message text. Nothing is sent to blocked or unmatched people. Signing out or deleting the account removes this device's push token. Builds without Firebase configured show "Push notifications are not configured in this build".
+12. Verification: only verified profiles appear in Discover. During the beta a moderator verifies profiles. Selfie liveness verification is planned.
 
 ## Getting your export
 Open More → Request your data. Each platform card explains the official steps and links to the official help page or portal.

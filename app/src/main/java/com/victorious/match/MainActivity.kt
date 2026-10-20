@@ -14,6 +14,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        com.victorious.match.push.Push.init(this)
         handle(intent)
         setContent { App(requested) }
     }
