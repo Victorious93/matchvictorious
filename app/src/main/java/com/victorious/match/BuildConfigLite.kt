@@ -1,3 +1,3 @@
 package com.victorious.match
 
-object BuildConfigLite { const val VERSION = "0.2.0" }
+object BuildConfigLite { const val VERSION = "0.3.0" }

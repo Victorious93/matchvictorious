@@ -22,8 +22,8 @@ android {
         applicationId = "com.victorious.match"
         minSdk = 26
         targetSdk = 36
-        versionCode = 2
-        versionName = "0.2.0"
+        versionCode = 3
+        versionName = "0.3.0"
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
     }
@@ -71,6 +71,9 @@ dependencies {
     implementation(libs.supabase.postgrest)
     implementation(libs.supabase.realtime)
     implementation(libs.supabase.storage)
+    implementation(libs.supabase.functions)
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network)
     implementation(libs.ktor.client.okhttp)
     testImplementation(libs.junit)
     testImplementation(libs.org.json)

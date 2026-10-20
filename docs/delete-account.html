@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Delete your MatchVictorious account</title>
+<style>body{font-family:system-ui,sans-serif;max-width:640px;margin:2rem auto;padding:0 1rem;background:#0b0b14;color:#e8e8f0}h1{color:#00f0ff}a{color:#ff3dcb}
+input,button{font-size:1rem;padding:.6rem;margin:.3rem 0;width:100%;box-sizing:border-box}button{background:#ff3dcb;color:#fff;border:0;border-radius:8px;cursor:pointer}#msg{margin-top:1rem}</style></head>
+<body>
+<h1>Delete your MatchVictorious account</h1>
+<p><b>In the app:</b> More → Settings → <b>Delete account</b> → confirm.</p>
+<p><b>On the web:</b> sign in below with the email and password you use for MatchVictorious, and the account is deleted immediately.</p>
+<h2>What is deleted</h2>
+<ul><li>Your account (email and password), profile, approximate location, preferences</li>
+<li>Your photos (database records and stored files)</li>
+<li>Your likes and passes, matches, chat messages, blocks and call records</li></ul>
+<h2>What is kept</h2>
+<ul><li>Safety reports filed by or about you are kept for trust &amp; safety and legal purposes. Your account link is removed; a snapshot of the reported name and bio is kept with reports about you.</li>
+<li>Data imported from other dating apps was never uploaded. Remove it on your phone with Settings → Delete All Data, or by uninstalling.</li>
+<li>Backups expire on our provider's backup schedule (up to 7 days on paid plans).</li></ul>
+<form id="f"><input id="e" type="email" placeholder="Email" required autocomplete="username">
+<input id="p" type="password" placeholder="Password" required autocomplete="current-password">
+<label><input id="c" type="checkbox" style="width:auto" required> I understand this permanently deletes my account.</label>
+<button>Delete my account</button></form>
+<div id="msg"></div>
+<script type="module">
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+const sb = createClient("https://swcotjvqumzgszzhnmks.supabase.co", "sb_publishable_iKqJke5ky7TSBqKmmeWMKw_e4kQdEF9");
+const msg = (t) => document.getElementById("msg").textContent = t;
+document.getElementById("f").addEventListener("submit", async (ev) => {
+  ev.preventDefault(); msg("Working…");
+  const { error } = await sb.auth.signInWithPassword({ email: e.value.trim(), password: p.value });
+  if (error) return msg("Sign-in failed: " + error.message);
+  const { error: fe } = await sb.functions.invoke("delete-account", { method: "POST" });
+  if (fe) return msg("Deletion failed. Please try again.");
+  await sb.auth.signOut({ scope: "local" }); msg("Your account has been deleted.");
+});
+</script>
+</body></html>

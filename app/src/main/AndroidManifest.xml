@@ -4,6 +4,8 @@
 
     <!-- INTERNET is needed for the MatchVictorious platform (Supabase). Imports are still parsed on-device. -->
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- Approximate location only (rounded again to ~1 km before upload). Optional; city fallback exists. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <!-- Fleet control: only apps signed with the SAME key may call the fleet API. -->
     <permission
