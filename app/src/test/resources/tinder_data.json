@@ -1,0 +1,31 @@
+{
+  "User": {
+    "full_name": "Synthetic Sam",
+    "bio": "Synthetic fixture. Not a real person.",
+    "birth_date": "1990-01-01T00:00:00.000Z",
+    "gender": "M",
+    "interested_in": "F",
+    "city": {"name": "Testville", "region": "TS"},
+    "jobs": [{"title": {"name": "Engineer"}, "company": {"name": "Acme"}}],
+    "schools": [{"name": "Test University"}],
+    "email": "sam@example.invalid"
+  },
+  "Messages": [
+    {"match_id": "Match 1", "messages": [
+      {"to": 1, "from": "You", "message": "Hey there!", "sent_date": "Mon, 01 Jan 2024 10:00:00 GMT"},
+      {"to": 1, "from": "You", "message": "How was your weekend?", "sent_date": "Tue, 02 Jan 2024 11:00:00 GMT"}
+    ]},
+    {"match_id": "Match 2", "messages": []},
+    {"messages": [{"message": "No match id and no from field"}, {"from": "You"}]}
+  ],
+  "Usage": {
+    "app_opens": {"2024-01-01": 3, "2024-01-02": 4},
+    "swipes_likes": {"2024-01-01": 10},
+    "swipes_passes": {"2024-01-01": 5},
+    "matches": {"2024-01-01": 6},
+    "messages_sent": {"2024-01-01": 2},
+    "messages_received": {"2024-01-01": 1}
+  },
+  "Photos": ["photo1.jpg"],
+  "UnknownFutureSection": {"x": 1}
+}

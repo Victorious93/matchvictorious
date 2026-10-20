@@ -1,0 +1,7 @@
+<resources>
+    <style name="Theme.MatchVictorious" parent="android:Theme.Material.NoActionBar">
+        <item name="android:windowBackground">#FF07070D</item>
+        <item name="android:statusBarColor">#FF07070D</item>
+        <item name="android:navigationBarColor">#FF07070D</item>
+    </style>
+</resources>

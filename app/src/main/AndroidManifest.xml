@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- No INTERNET permission. Strip any merged in by libraries. -->
+    <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" tools:node="remove" />
+
+    <!-- Fleet control: only apps signed with the SAME key may call the fleet API. -->
+    <permission
+        android:name="com.victorious.match.permission.FLEET_CONTROL"
+        android:label="Control MatchVictorious (Victorious fleet)"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.victorious.match.permission.FLEET_CONTROL" />
+
+    <!-- Needed so deep links can check whether the official dating apps are installed. -->
+    <queries>
+        <intent><action android:name="android.intent.action.MAIN" /></intent>
+        <package android:name="com.android.vending" />
+    </queries>
+
+    <application
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="false"
+        android:icon="@mipmap/ic_launcher"
+        android:label="MatchVictorious"
+        android:theme="@style/Theme.MatchVictorious">
+
+        <activity android:name=".MainActivity" android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <!-- Fleet OPEN_SCREEN entry point, guarded by the signature permission. -->
+        <activity-alias
+            android:name=".fleet.OpenScreenAlias"
+            android:targetActivity=".MainActivity"
+            android:exported="true"
+            android:permission="com.victorious.match.permission.FLEET_CONTROL">
+            <intent-filter>
+                <action android:name="com.victorious.match.action.OPEN_SCREEN" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity-alias>
+
+        <receiver
+            android:name=".fleet.FleetReceiver"
+            android:exported="true"
+            android:permission="com.victorious.match.permission.FLEET_CONTROL">
+            <intent-filter>
+                <action android:name="com.victorious.match.action.STATUS" />
+                <action android:name="com.victorious.match.action.PING" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>
