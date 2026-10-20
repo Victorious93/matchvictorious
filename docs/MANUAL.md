@@ -1,15 +1,25 @@
 # MatchVictorious Manual
 
-MatchVictorious is a privacy-first hub for the data exports you request from dating platforms. It reads exports on your phone, encrypts them and shows your profiles, matches and messages in one place.
+MatchVictorious is a privacy-first dating platform. It has two parts:
+- **The platform** (Discover, Chats, Profile). This is a MatchVictorious account that uses an email address. No phone number is ever needed.
+- **The import hub**. It reads the data exports you request from other dating apps on your phone and stores them encrypted. You can use one to pre-fill your MatchVictorious profile.
 
 ## Why import, not sync?
 None of the supported platforms (Tinder, Hinge, Bumble, OkCupid, Match, Plenty of Fish, Grindr, Feeld, Coffee Meets Bagel, Badoo) offers a public API or third-party login. Their terms forbid bots and unofficial clients. The only legitimate path is your legal right to a copy of your data (GDPR/CCPA). So MatchVictorious:
 - never asks for your dating-app passwords
 - never automates other apps, uses no accessibility service and reads no notifications
-- has no live sync and no internet permission
+- has no live sync with other platforms. Imports never leave your phone.
 
 ## First launch
 Read the consent screen, tick the box and tap Continue. You can withdraw consent at any time with Settings → Delete All Data.
+
+## Your MatchVictorious account
+1. Open Discover, Chats or Profile and enter an email address and password (8+ characters). Tap **Create account**. If email confirmation is on, confirm the link in your inbox and then tap **Sign in**.
+2. Open **Profile**. Enter your name, birthdate (YYYY-MM-DD, 18+ only), optional gender and a bio, then tap **Save**. **Add photo** uploads a picture (JPEG, PNG or WebP, up to 5 MB) to private storage. Photos are visible only after moderation.
+3. **Bootstrap from an import:** go to More → Imported profiles and tap **Use for my MatchVictorious profile** on an import. Name, birthdate, gender and bio are copied into the Profile form. Nothing is uploaded until you review the form and tap Save. Your matches and messages from other apps are never uploaded.
+4. **Discover** shows verified members who match your preferences. Tap Like or Pass. When two people like each other they **match**. A match expires after 14 days.
+5. **Chats** lists your matches. Open one to chat in real time. Use **Safety** in a chat to Unmatch, Block, or Report & block.
+6. Verification: only verified profiles appear in Discover. During the beta a moderator verifies profiles. Selfie liveness verification is planned.
 
 ## Getting your export
 Open More → Request your data. Each platform card explains the official steps and links to the official help page or portal.
@@ -29,11 +39,13 @@ Exports take anywhere from minutes to 30 days.
 Tinder exports have a dedicated parser (data.json: User, Messages, Usage). Other platforms use a generic parser that picks up profile fields and anything that looks like messages. Notes on the Profiles card say what was and was not recognised.
 
 ## Screens
-### Profiles
+### Discover / Chats / Profile
+The platform screens described above.
+### Imported profiles (More)
 Your own profile from each import, plus usage totals (app opens, swipes, matches).
-### Matches
+### Imported matches (More)
 Conversations found in your exports. Tinder exports identify matches only as "Match N".
-### Messages
+### Imported messages (More)
 A read-only view of imported messages. Exports usually contain only your side of each chat.
 ### Filters
 Filter by platform, search text, and show only matches that have messages. Filters apply to Profiles, Matches and Messages.
@@ -45,7 +57,9 @@ A privacy summary, fleet API info, and **Delete All Data**.
 ## Privacy and security
 - Storage: AES-256-GCM EncryptedFile (Jetpack Security). The key lives in the Android Keystore.
 - Backups and device transfer are disabled.
-- No INTERNET permission, so the app cannot upload anything.
+- The app uses the INTERNET permission only for your MatchVictorious account (Supabase backend over HTTPS). Imported exports are never uploaded.
+- Server access is limited by row-level security. Other members see your profile only if it is verified and neither of you has blocked the other. Only the two people in a match can read its messages.
+- No phone number is collected anywhere.
 - Exports contain other people's personal data. Keep them private.
 - Not affiliated with or endorsed by any dating platform.
 

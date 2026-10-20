@@ -1,11 +1,19 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 // Release signing comes ONLY from environment variables / CI secrets. Never commit release keys.
 val rs = listOf("MV_RELEASE_STORE_FILE", "MV_RELEASE_STORE_PASSWORD", "MV_RELEASE_KEY_ALIAS", "MV_RELEASE_KEY_PASSWORD").map { System.getenv(it) }
 val hasReleaseSigning = rs.all { !it.isNullOrBlank() }
+
+// Supabase endpoint + PUBLISHABLE key (public by design; access is enforced by RLS).
+// Override with -PMV_SUPABASE_URL=... / env MV_SUPABASE_URL. NEVER put a service_role/secret key here.
+fun cfg(name: String, default: String) = (findProperty(name) as String?) ?: System.getenv(name) ?: default
+val supabaseUrl = cfg("MV_SUPABASE_URL", "https://swcotjvqumzgszzhnmks.supabase.co")
+val supabaseKey = cfg("MV_SUPABASE_PUBLISHABLE_KEY", "sb_publishable_iKqJke5ky7TSBqKmmeWMKw_e4kQdEF9")
+require(!supabaseKey.startsWith("sb_secret_") && !supabaseKey.contains("service_role")) { "Refusing to embed a secret Supabase key" }
 
 android {
     namespace = "com.victorious.match"
@@ -14,8 +22,10 @@ android {
         applicationId = "com.victorious.match"
         minSdk = 26
         targetSdk = 36
-        versionCode = 1
-        versionName = "0.1.0"
+        versionCode = 2
+        versionName = "0.2.0"
+        buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
+        buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
     }
     signingConfigs {
         getByName("debug") {
@@ -40,7 +50,7 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    buildFeatures { compose = true }
+    buildFeatures { compose = true; buildConfig = true }
     sourceSets.getByName("main").assets.srcDir(rootProject.file("docs"))
     testOptions { unitTests.isReturnDefaultValues = true }
 }
@@ -56,6 +66,12 @@ dependencies {
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.security.crypto)
     implementation(libs.kotlinx.coroutines.android)
+    implementation(platform(libs.supabase.bom))
+    implementation(libs.supabase.auth)
+    implementation(libs.supabase.postgrest)
+    implementation(libs.supabase.realtime)
+    implementation(libs.supabase.storage)
+    implementation(libs.ktor.client.okhttp)
     testImplementation(libs.junit)
     testImplementation(libs.org.json)
 }
