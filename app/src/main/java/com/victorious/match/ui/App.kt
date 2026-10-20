@@ -54,7 +54,7 @@ fun App(requested: MutableState<Screen?>) = MatchTheme {
     var screen by remember { mutableStateOf(Screen.Discover) }
     val platform = remember { PlatformState() }
     LaunchedEffect(requested.value) { requested.value?.let { screen = it; requested.value = null } }
-    val underMore = listOf(Screen.Events, Screen.Safety, Screen.Moderation, Screen.Filters, Screen.Guide, Screen.Help, Screen.Settings, Screen.Profiles, Screen.Matches, Screen.Messages)
+    val underMore = listOf(Screen.Plus, Screen.Events, Screen.Safety, Screen.Moderation, Screen.Filters, Screen.Guide, Screen.Help, Screen.Settings, Screen.Profiles, Screen.Matches, Screen.Messages)
     BackHandler(enabled = screen != Screen.Discover && platform.openChat == null) { screen = if (screen in underMore) Screen.More else Screen.Discover }
 
     Scaffold(
@@ -87,6 +87,7 @@ fun App(requested: MutableState<Screen?>) = MatchTheme {
                 Screen.Moderation -> ModerationScreen()
                 Screen.Safety -> SafetyScreen()
                 Screen.Events -> EventsScreen()
+                Screen.Plus -> PlusScreen()
                 Screen.Settings -> SettingsScreen(store) { store.deleteAll(); bundles = emptyList(); consent = false }
                 Screen.More -> MoreScreen { screen = it }
             }
@@ -307,6 +308,7 @@ fun SettingsScreen(store: EncryptedStore, onDeleteAll: () -> Unit) {
 fun MoreScreen(go: (Screen) -> Unit) = Column(Modifier.verticalScroll(rememberScrollState()).padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
     var admin by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) { admin = com.victorious.match.backend.Backend.me() != null && com.victorious.match.backend.ModApi.isAdmin() }
+    NeonCard(Modifier.clickable { go(Screen.Plus) }) { H("Victorious+"); P("Who liked you, rewind, extra filters") }
     NeonCard(Modifier.clickable { go(Screen.Events) }) { H("Events & group dates"); P("Local events near you, RSVP and group chat") }
     NeonCard(Modifier.clickable { go(Screen.Safety) }) { H("Safety center"); P("SOS, check-in timer, Share my date, safety tips") }
     if (admin) NeonCard(Modifier.clickable { go(Screen.Moderation) }) { H("Moderation"); P("Verify profiles, review photos, handle reports") }

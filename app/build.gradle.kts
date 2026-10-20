@@ -25,8 +25,8 @@ android {
         applicationId = "com.victorious.match"
         minSdk = 26
         targetSdk = 36
-        versionCode = 9
-        versionName = "0.9.0"
+        versionCode = 10
+        versionName = "0.10.0"
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
         buildConfigField("boolean", "PUSH_CONFIGURED", pushConfigured.toString())
@@ -81,6 +81,7 @@ dependencies {
     implementation(platform(libs.firebase.bom))
     implementation(libs.firebase.messaging)
     implementation(libs.livekit.android)
+    implementation(libs.billing.ktx)
     implementation(libs.ktor.client.okhttp)
     testImplementation(libs.junit)
     testImplementation(libs.org.json)
