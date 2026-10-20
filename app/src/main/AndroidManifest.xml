@@ -10,6 +10,9 @@
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
     <!-- Voice intro recording (user-initiated, max 30 s). -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <!-- In-app video calls (camera is off until you turn it on). -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
 
     <!-- Fleet control: only apps signed with the SAME key may call the fleet API. -->
     <permission

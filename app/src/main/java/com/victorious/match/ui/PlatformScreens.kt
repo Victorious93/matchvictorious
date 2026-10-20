@@ -26,7 +26,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /** Shared state: a draft pre-filled from an import waiting to be reviewed on the profile screen. */
-class PlatformState { var pendingDraft by mutableStateOf<ProfileDraft?>(null); var openChat by mutableStateOf<MatchCard?>(null) }
+class PlatformState { val calls = CallState(); var pendingDraft by mutableStateOf<ProfileDraft?>(null); var openChat by mutableStateOf<MatchCard?>(null) }
 
 private fun err(t: Throwable) = t.message?.lineSequence()?.firstOrNull()?.take(200) ?: "Something went wrong"
 
@@ -159,7 +159,7 @@ fun DiscoverScreen() = SignedIn { _ ->
 
 @Composable
 fun ChatsScreen(state: PlatformState) = SignedIn { me ->
-    state.openChat?.let { m -> return@SignedIn ChatScreen(me, m) { state.openChat = null } }
+    state.openChat?.let { m -> return@SignedIn ChatScreen(me, m, state.calls) { state.openChat = null } }
     var cards by remember { mutableStateOf<List<MatchCard>?>(null) }
     var msg by remember { mutableStateOf<String?>(null) }
     LaunchedEffect(Unit) { runCatching { Backend.matchCards() }.onSuccess { cards = it }.onFailure { msg = err(it); cards = emptyList() } }
@@ -190,7 +190,7 @@ fun ChatsScreen(state: PlatformState) = SignedIn { me ->
 }
 
 @Composable
-fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
+fun ChatScreen(me: String, card: MatchCard, calls: CallState = CallState(), onBack: () -> Unit) {
     val match = MatchRow(card.matchId, me, card.otherId)
     val scope = rememberCoroutineScope()
     var msgs by remember { mutableStateOf<List<MessageRow>>(emptyList()) }
@@ -214,6 +214,7 @@ fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
             TextButton(onClick = onBack) { Text("‹ Back") }
             Avatar(card.photoPath, card.initial, 40.dp); Spacer(Modifier.width(8.dp)); H(card.otherName)
             Spacer(Modifier.weight(1f))
+            CallButtons(me, card.matchId, calls)
             Box { TextButton(onClick = { menu = true }) { Text("Safety") }
                 DropdownMenu(menu, { menu = false }) {
                     DropdownMenuItem(text = { Text("Share my date") }, onClick = { menu = false; shareDate = true })
