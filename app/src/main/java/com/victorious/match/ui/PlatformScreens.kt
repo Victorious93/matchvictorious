@@ -197,6 +197,7 @@ fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
     var text by remember { mutableStateOf("") }
     var info by remember { mutableStateOf<String?>(null) }
     var menu by remember { mutableStateOf(false) }
+    var shareDate by remember { mutableStateOf(false) }
     val other = card.otherId
     androidx.activity.compose.BackHandler(onBack = onBack)
     LaunchedEffect(match.id) {
@@ -206,6 +207,8 @@ fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
     DisposableEffect(match.id) { onDispose { scope.launch { runCatching { Backend.leave(match.id) } } } }
     val list = rememberLazyListState()
     LaunchedEffect(msgs.size) { if (msgs.isNotEmpty()) list.animateScrollToItem(msgs.size - 1) }
+    if (shareDate) AlertDialog(onDismissRequest = { shareDate = false }, confirmButton = { TextButton(onClick = { shareDate = false }) { Text("Close") } },
+        text = { Column(Modifier.verticalScroll(rememberScrollState())) { ShareDateCard(card) } })
     Column(Modifier.fillMaxSize().padding(12.dp)) {
         Row(verticalAlignment = Alignment.CenterVertically) {
             TextButton(onClick = onBack) { Text("‹ Back") }
@@ -213,6 +216,7 @@ fun ChatScreen(me: String, card: MatchCard, onBack: () -> Unit) {
             Spacer(Modifier.weight(1f))
             Box { TextButton(onClick = { menu = true }) { Text("Safety") }
                 DropdownMenu(menu, { menu = false }) {
+                    DropdownMenuItem(text = { Text("Share my date") }, onClick = { menu = false; shareDate = true })
                     DropdownMenuItem(text = { Text("Unmatch") }, onClick = { menu = false; scope.launch { runCatching { Backend.unmatch(match.id) }; onBack() } })
                     DropdownMenuItem(text = { Text("Block") }, onClick = { menu = false; scope.launch { runCatching { Backend.block(other) }; onBack() } })
                     DropdownMenuItem(text = { Text("Report & block") }, onClick = { menu = false; scope.launch {

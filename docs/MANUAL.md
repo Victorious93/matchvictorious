@@ -33,6 +33,13 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 - **Like with comment:** in Discover, tap **♥ Like this answer** under someone's prompt and optionally add a comment (max 300 characters). The comment is revealed only if you match: it becomes the first message in the chat.
 - **Icebreakers:** an empty chat shows suggested openers based on the other person's prompts. Tapping one fills the message box. Nothing is sent until you tap Send.
 
+## Safety center
+Open it from More → Safety center (or Safety → Share my date inside a chat).
+- **SOS:** opens your phone dialer with 911 filled in. You press call. **Share my location** opens the Android share sheet with your approximate location (a map link) for you to send to someone you trust. Nothing is ever sent automatically.
+- **Check-in timer:** set a reminder (0.5–6 h). When it fires, a notification asks "Are you OK?". Tap **I'm safe** to cancel it early. Nobody is contacted automatically.
+- **Share my date:** pick a match (optional), enter who, where and when, then tap Create link & share. MatchVictorious creates a private link (https://victorious93.github.io/matchvictorious/date.html?t=…) showing only those details. The link expires 12 hours after the date starts, and the share sheet lets *you* send it. Creating the link also sets a check-in reminder.
+- **Safety tips** for meeting safely.
+
 ## Moderation (moderators only)
 **Make yourself a moderator (Don, once):**
 1. Create your MatchVictorious account in the app (Profile → Create account) and save a profile.

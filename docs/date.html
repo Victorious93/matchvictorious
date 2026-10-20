@@ -1,0 +1,18 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><title>MatchVictorious – shared date details</title>
+<style>body{font-family:system-ui,sans-serif;max-width:560px;margin:2rem auto;padding:0 1rem;background:#0b0b14;color:#e8e8f0}h1{color:#00f0ff}.k{color:#ff3dcb}</style></head>
+<body><h1>Shared date details</h1><div id="c">Loading…</div>
+<p style="color:#888">A MatchVictorious user shared these details with you for safety. This link expires automatically. In an emergency call your local emergency number (911 in the US).</p>
+<script>
+const t = new URLSearchParams(location.search).get("t") || "";
+const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+fetch("https://swcotjvqumzgszzhnmks.supabase.co/functions/v1/date-share?t=" + encodeURIComponent(t))
+  .then((r) => r.ok ? r.json() : Promise.reject())
+  .then((d) => { document.getElementById("c").innerHTML =
+    `<p><span class="k">Meeting:</span> ${esc(d.date_name)}</p><p><span class="k">Where:</span> ${esc(d.place)}</p>` +
+    `<p><span class="k">When:</span> ${esc(new Date(d.starts_at).toLocaleString())}</p>` +
+    (d.checkin_at ? `<p><span class="k">Planned check-in:</span> ${esc(new Date(d.checkin_at).toLocaleString())}</p>` : "") +
+    (d.note ? `<p><span class="k">Note:</span> ${esc(d.note)}</p>` : "") +
+    `<p style="color:#888">Link expires ${esc(new Date(d.expires_at).toLocaleString())}</p>`; })
+  .catch(() => { document.getElementById("c").textContent = "This link has expired or was revoked."; });
+</script></body></html>
