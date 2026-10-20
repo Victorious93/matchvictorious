@@ -33,6 +33,13 @@ Read the consent screen, tick the box and tap Continue. You can withdraw consent
 - **Like with comment:** in Discover, tap **♥ Like this answer** under someone's prompt and optionally add a comment (max 300 characters). The comment is revealed only if you match: it becomes the first message in the chat.
 - **Icebreakers:** an empty chat shows suggested openers based on the other person's prompts. Tapping one fills the message box. Nothing is sent until you tap Send.
 
+## Voice and video calls
+- In a chat, tap 📞 (voice) or 🎥 (video). The first time, you're asked to **Allow calls** with that match. A call can only start once you **both** allow calls. You can withdraw at any time.
+- The other person gets an incoming-call prompt while the app is open, and can Accept or Decline. Unanswered calls stop ringing after 60 seconds.
+- Audio first: your camera stays off until you tap **Camera on**. The other person's video is covered until you **both** tap **Accept video**.
+- **Report** during a call reports and blocks the person and ends the call. Calls are never recorded. Each person can start up to 20 calls per day.
+- If calls aren't set up on the server yet, you'll see "Calls aren't available yet".
+
 ## Safety center
 Open it from More → Safety center (or Safety → Share my date inside a chat).
 - **SOS:** opens your phone dialer with 911 filled in. You press call. **Share my location** opens the Android share sheet with your approximate location (a map link) for you to send to someone you trust. Nothing is ever sent automatically.

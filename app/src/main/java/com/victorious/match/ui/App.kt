@@ -90,6 +90,7 @@ fun App(requested: MutableState<Screen?>) = MatchTheme {
                 Screen.More -> MoreScreen { screen = it }
             }
         }
+        CallHost(platform.calls)
     }
 }
 

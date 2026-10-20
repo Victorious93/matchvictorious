@@ -12,6 +12,7 @@ ktor = "3.5.1"
 coil = "3.6.3"
 firebaseBom = "35.0.2"
 googleServices = "4.5.0"
+livekit = "2.29.1"
 
 [libraries]
 org-json = { group = "org.json", name = "json", version = "20250517" }
@@ -39,6 +40,7 @@ coil-compose = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref 
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
 firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebaseBom" }
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging" }
+livekit-android = { group = "io.livekit", name = "livekit-android", version.ref = "livekit" }
 ktor-client-okhttp = { group = "io.ktor", name = "ktor-client-okhttp", version.ref = "ktor" }
 
 [plugins]
