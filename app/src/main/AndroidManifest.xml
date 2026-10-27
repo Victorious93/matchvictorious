@@ -25,6 +25,9 @@
     <queries>
         <intent><action android:name="android.intent.action.MAIN" /></intent>
         <package android:name="com.android.vending" />
+        <!-- Fleet theme: read VictorLaunch's theme provider. -->
+        <package android:name="com.victorious.launch" />
+        <provider android:authorities="com.victorious.launch.theme" />
     </queries>
 
     <application
@@ -61,6 +64,10 @@
                 <action android:name="com.victorious.match.action.STATUS" />
                 <action android:name="com.victorious.match.action.PING" />
             </intent-filter>
+        </receiver>
+        <!-- Fleet theme wake-up from VictorLaunch (explicit send). Payload is ignored; we re-query the provider. -->
+        <receiver android:name=".theme.FleetThemeReceiver" android:exported="true">
+            <intent-filter><action android:name="com.victorious.launch.action.FLEET_THEME_CHANGED" /></intent-filter>
         </receiver>
         <receiver android:name=".safety.CheckinReceiver" android:exported="false" />
         <service android:name=".push.MvMessagingService" android:exported="false">

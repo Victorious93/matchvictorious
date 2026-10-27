@@ -159,3 +159,11 @@ More → **Get verified**. Read and accept the biometric consent, allow the came
 **Moderators:** Moderation → **Selfies** shows the live selfie next to the profile photos and the gesture results. "Same person — verify" or "Reject" (reason required) deletes the selfie right away. Use "Purge expired selfies" occasionally to sweep any leftover objects.
 
 **Vendor option:** if AWS Rekognition Face Liveness secrets are set (docs/setup/liveness-vendor.md) the server-side vendor check is enabled; until then the on-device check is used.
+
+## Fleet theme (from VictorLaunch)
+
+MatchVictorious follows the fleet palette you pick in VictorLaunch → Settings → **Fleet theme** (schema v1). It reads `content://com.victorious.launch.theme/current` on start, on resume, when the provider notifies a change, and when VictorLaunch sends `FLEET_THEME_CHANGED` (the broadcast is only a wake-up; colors always come from a fresh provider query). MatchVictorious never writes the theme.
+
+- Only a provider owned by `com.victorious.launch` is trusted (and, if the build sets `fleetLaunchCertSha256`, only with that signing cert).
+- If VictorLaunch isn't installed, or it hasn't pinned this app (SecurityException), the default neon cyan→magenta theme stays. Fix: in VictorLaunch, enable **Trust installed fleet share apps** or add a pin for MatchVictorious.
+- Unknown schema versions are ignored. Some neon accents (rings, headings) stay cyan/magenta.
