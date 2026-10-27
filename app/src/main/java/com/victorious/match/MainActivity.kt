@@ -15,9 +15,12 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         com.victorious.match.push.Push.init(this)
+        com.victorious.match.theme.FleetThemeClient.start(this)
         handle(intent)
         setContent { App(requested) }
     }
+
+    override fun onResume() { super.onResume(); com.victorious.match.theme.FleetThemeClient.refresh(this) }
 
     override fun onNewIntent(intent: Intent) { super.onNewIntent(intent); handle(intent) }
 

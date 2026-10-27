@@ -29,6 +29,8 @@ android {
         versionName = "0.11.0"
         buildConfigField("String", "SUPABASE_URL", "\"$supabaseUrl\"")
         buildConfigField("String", "SUPABASE_KEY", "\"$supabaseKey\"")
+        // Optional comma-separated SHA-256 pins for VictorLaunch's signing cert (gradle -PfleetLaunchCertSha256=...).
+        buildConfigField("String", "FLEET_LAUNCH_CERT_SHA256", "\"${(project.findProperty("fleetLaunchCertSha256") as String?) ?: ""}\"")
         buildConfigField("boolean", "PUSH_CONFIGURED", pushConfigured.toString())
     }
     signingConfigs {
